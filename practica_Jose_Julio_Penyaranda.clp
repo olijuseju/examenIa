@@ -25,7 +25,7 @@
 (test (< ?q ?z))
 =>
 (retract ?f)
-(assert fallo 1)
+(assert (fallo 1))
 )
 
 (defrule finalizar_error
@@ -61,6 +61,7 @@
 ?f2 <- (ncajas_robot ?cr)
 ?f3 <- (linea_pedido n ?y $?rest3)
 (test (> ?cr 0))
+(test (> ?nr 0))
 =>
 (retract ?f)
 (retract ?f2)
@@ -74,8 +75,8 @@
 ?f <- (cajas_robot $?ini u ?ur $?rest)
 ?f2 <- (ncajas_robot ?cr)
 ?f3 <- (palet_uvas ?u)
-(pedido n ?x $?rest2)
-(linea_pedido n ?y $?rest3)
+(pedido $?ini2 u ?x $?rest2)
+(linea_pedido $?ini2 u ?y $?rest3)
 (test (> ?x ?y))
 (test (< ?ur ?x))
 (test (< (+ ?ur ?y) ?x))
@@ -85,61 +86,59 @@
 (retract ?f)
 (retract ?f2)
 (retract ?f3)
-(assert (cajas_robot n (+ ?ur 1) $?rest))
+(assert (cajas_robot $?ini u (+ ?ur 1) $?rest))
 (assert (ncajas_robot (+ ?cr 1)))
 (assert (palet_uvas (- ?u 1) ))
 )
 
-(defrule dejar_cajas_naranjas
+(defrule dejar_cajas_uvas
 ?f <- (cajas_robot $?ini u ?ur $?rest)
 ?f2 <- (ncajas_robot ?cr)
 ?f3 <- (linea_pedido $?ini1 u ?y $?rest1)
 (test (> ?cr 0))
+(test (> ?ur 0))
 =>
 (retract ?f)
 (retract ?f2)
 (retract ?f3)
-(assert (cajas_robot n 0 $?rest))
-(assert (ncajas_robot (- ?cr ?nr)))
-(assert (linea_pedido n (+ ?y ?nr) $?rest3))
+(assert (cajas_robot $?ini u 0 $?rest))
+(assert (ncajas_robot (- ?cr ?ur)))
+(assert (linea_pedido $?ini1 u (+ ?y ?ur) $?rest1))
 )
 
-(defrule recoger_cajas_naranjas
-?f <- (cajas_robot n ?nr $?rest)
+(defrule recoger_cajas_caquis
+?f <- (cajas_robot $?ini q ?qr $?rest)
 ?f2 <- (ncajas_robot ?cr)
-?f3 <- (palet_naranjas ?n)
-(pedido n ?x $?rest2)
-(linea_pedido n ?y $?rest3)
+?f3 <- (palet_caquis ?n)
+(pedido $?ini2 q ?x $?rest2)
+(linea_pedido $?ini2 q ?y $?rest3)
 (test (> ?x ?y))
-(test (< ?nr ?x))
-(test (< (+ ?nr ?y) ?x))
+(test (< ?qr ?x))
+(test (< (+ ?qr ?y) ?x))
 (test (< ?cr ?*lim_cr*))
 (test (> ?n 0))
 =>
 (retract ?f)
 (retract ?f2)
 (retract ?f3)
-(assert (cajas_robot n (+ ?nr 1) $?rest))
+(assert (cajas_robot $?ini q (+ ?qr 1) $?rest))
 (assert (ncajas_robot (+ ?cr 1)))
-(assert (palet_naranjas (- ?n 1) ))
+(assert (palet_caquis (- ?n 1) ))
 )
 
-(defrule dejar_cajas_naranjas
-?f <- (cajas_robot n ?nr $?rest)
+(defrule dejar_cajas_caquis
+?f <- (cajas_robot $?ini q ?qr $?rest)
 ?f2 <- (ncajas_robot ?cr)
-?f3 <- (linea_pedido n ?y $?rest3)
+?f3 <- (linea_pedido $?ini1 q ?y $?rest1)
 (test (> ?cr 0))
 =>
 (retract ?f)
 (retract ?f2)
 (retract ?f3)
-(assert (cajas_robot n 0 $?rest))
-(assert (ncajas_robot (- ?cr ?nr)))
-(assert (linea_pedido n (+ ?y ?nr) $?rest3))
+(assert (cajas_robot $?ini q 0 $?rest))
+(assert (ncajas_robot (- ?cr ?qr)))
+(assert (linea_pedido $?ini1 q (+ ?y ?qr) $?rest1))
 )
-
-
-
 
 (defrule finalizar_bien
 (pedido $?res)
