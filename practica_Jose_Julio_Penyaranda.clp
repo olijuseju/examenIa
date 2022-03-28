@@ -69,14 +69,16 @@
 (assert (cajas_robot n 0 $?rest))
 (assert (ncajas_robot (- ?cr ?nr)))
 (assert (linea_pedido n (+ ?y ?nr) $?rest3))
+(printout t "Linea pedido: " n (+ ?y ?nr) $?rest3 crlf)
+
 )
 
 (defrule recoger_cajas_uvas
-?f <- (cajas_robot $?ini u ?ur $?rest)
+?f <- (cajas_robot $?ini u ?ur)
 ?f2 <- (ncajas_robot ?cr)
 ?f3 <- (palet_uvas ?u)
-(pedido $?ini2 u ?x $?rest2)
-(linea_pedido $?ini2 u ?y $?rest3)
+(pedido $?ini2 u ?x)
+(linea_pedido $?ini2 u ?y)
 (test (> ?x ?y))
 (test (< ?ur ?x))
 (test (< (+ ?ur ?y) ?x))
@@ -86,24 +88,26 @@
 (retract ?f)
 (retract ?f2)
 (retract ?f3)
-(assert (cajas_robot $?ini u (+ ?ur 1) $?rest))
+(assert (cajas_robot $?ini u (+ ?ur 1)))
 (assert (ncajas_robot (+ ?cr 1)))
 (assert (palet_uvas (- ?u 1) ))
 )
 
 (defrule dejar_cajas_uvas
-?f <- (cajas_robot $?ini u ?ur $?rest)
+?f <- (cajas_robot $?ini u ?ur)
 ?f2 <- (ncajas_robot ?cr)
-?f3 <- (linea_pedido $?ini1 u ?y $?rest1)
+?f3 <- (linea_pedido $?ini1 u ?y)
 (test (> ?cr 0))
 (test (> ?ur 0))
 =>
 (retract ?f)
 (retract ?f2)
 (retract ?f3)
-(assert (cajas_robot $?ini u 0 $?rest))
+(assert (cajas_robot $?ini u 0))
 (assert (ncajas_robot (- ?cr ?ur)))
-(assert (linea_pedido $?ini1 u (+ ?y ?ur) $?rest1))
+(assert (linea_pedido $?ini1 u (+ ?y ?ur)))
+(printout t "Linea pedido: " $?ini1 u (+ ?y ?ur) crlf)
+
 )
 
 (defrule recoger_cajas_caquis
@@ -138,12 +142,64 @@
 (assert (cajas_robot $?ini q 0 $?rest))
 (assert (ncajas_robot (- ?cr ?qr)))
 (assert (linea_pedido $?ini1 q (+ ?y ?qr) $?rest1))
+(printout t "Linea pedido: " $?ini1 q (+ ?y ?qr) $?rest1 crlf)
+
 )
+
+
+
+
+
+
+(defrule recoger_cajas_manzanas
+?f <- (cajas_robot $?ini m ?mr $?rest)
+?f2 <- (ncajas_robot ?cr)
+?f3 <- (palet_manzanas ?m)
+(pedido $?ini2 m ?x $?rest2)
+(linea_pedido $?ini2 m ?y $?rest3)
+(test (> ?x ?y))
+(test (< ?mr ?x))
+(test (< (+ ?mr ?y) ?x))
+(test (< ?cr ?*lim_cr*))
+(test (> ?m 0))
+=>
+(retract ?f)
+(retract ?f2)
+(retract ?f3)
+(assert (cajas_robot $?ini m (+ ?mr 1) $?rest))
+(assert (ncajas_robot (+ ?cr 1)))
+(assert (palet_manzanas (- ?m 1) ))
+)
+
+(defrule dejar_cajas_manzanas
+?f <- (cajas_robot $?ini m ?mr $?rest)
+?f2 <- (ncajas_robot ?cr)
+?f3 <- (linea_pedido $?ini1 m ?y $?rest1)
+(test (> ?cr 0))
+=>
+(retract ?f)
+(retract ?f2)
+(retract ?f3)
+(assert (cajas_robot $?ini m 0 $?rest))
+(assert (ncajas_robot (- ?cr ?mr)))
+(assert (linea_pedido $?ini1 m (+ ?y ?mr) $?rest1))
+(printout t "Linea pedido: " $?ini1 m (+ ?y ?mr) $?rest1 crlf)
+
+)
+
+
+
+
+
+
 
 (defrule finalizar_bien
 (pedido $?res)
 (linea_pedido $?res)
 =>
+(printout t "Linea pedido: " $?res crlf)
+(printout t "Pedido: " $?res crlf)
 (printout t "Se ha completado la entrega" crlf)
+(halt)
 )
 
